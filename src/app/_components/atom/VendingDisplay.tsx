@@ -1,6 +1,7 @@
 interface VendingDisplayProps {
   title: string;
   value?: SN;
+  className?: string;
 }
 
 const VendingDisplay = ({ title, value }: VendingDisplayProps) => (
