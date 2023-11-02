@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useVendingOptions } from "~/utils/atoms/vending.atom";
 import { IconButton, type IconButtonProps } from "../atom/Icons";
-import { cn } from "~/utils";
+import { cn, getAllFormElementValue } from "~/utils";
 import InventoryEditableRow from "../atom/InventoryEditableRow";
+import { VendingOptionSchema } from "~/utils/zod/schema";
 
 const Fields = ["name", "price", "inventory"] as const;
 
@@ -22,6 +23,37 @@ const InventoryView = () => {
   const [editMode, setEditMode] = useState<number>();
   const { setVendingOption, vendingOption } = useVendingOptions();
 
+  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const data = getAllFormElementValue(e.currentTarget);
+
+    try {
+      const res = VendingOptionSchema.safeParse(data);
+
+      if (res.success) {
+        const { inventory, name, price } = res.data;
+        const newVendingOptions = vendingOption.map((option) => {
+          if (option.id === editMode) {
+            return {
+              id: option.id,
+              inventory: Number(inventory),
+              price: Number(price),
+              name: name,
+            };
+          }
+
+          return option;
+        });
+
+        setVendingOption(newVendingOptions);
+        setEditMode(undefined);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <aside className="mx-auto w-full max-w-md text-sm">
       <div className="w-full">
@@ -30,14 +62,15 @@ const InventoryView = () => {
           <div>Price</div>
           <div>QTY</div>
         </header>
-        <ul className="">
+        <div className="">
           {vendingOption.map(({ id, ...vendOption }) => {
             const isEditMode = editMode === id;
 
             return (
-              <li
+              <form
                 key={id}
                 className="relative grid w-full grid-cols-3 gap-4 py-1"
+                onSubmit={handleSave}
               >
                 {Fields.map((field, idx) => (
                   <InventoryEditableRow
@@ -50,6 +83,8 @@ const InventoryView = () => {
                     )}
                     shouldEdit={isEditMode}
                     value={vendOption[field]}
+                    name={field}
+                    type={field !== "name" ? "number" : "text"}
                   />
                 ))}
 
@@ -61,14 +96,17 @@ const InventoryView = () => {
                   />
                 ) : (
                   <div className="absolute right-0 top-1/2 flex w-full max-w-[10%] -translate-y-1/2 items-center gap-2 [&>*]:w-[18px]">
-                    <IconButton icon="RiCheck" />
-                    <IconButton icon="RiClear" />
+                    <IconButton type="submit" icon="RiCheck" />
+                    <IconButton
+                      onClick={() => setEditMode(undefined)}
+                      icon="RiClear"
+                    />
                   </div>
                 )}
-              </li>
+              </form>
             );
           })}
-        </ul>
+        </div>
       </div>
     </aside>
   );

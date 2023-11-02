@@ -7,11 +7,12 @@ interface SpanInputRowProps {
   type?: "text" | "number";
   onChange?(event: ChangeEvent<HTMLInputElement>): void;
   className?: string;
+  name?: string;
 }
 
 const InventoryEditableRow = (props: SpanInputRowProps) => {
   // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { shouldEdit, type = "text", value, onChange, className } = props;
+  const { shouldEdit, type = "text", value, onChange, className, name } = props;
 
   if (!shouldEdit) {
     return <span className={className}>{value}</span>;
@@ -27,6 +28,9 @@ const InventoryEditableRow = (props: SpanInputRowProps) => {
       defaultValue={value}
       onChange={onChange}
       type={type}
+      name={name}
+      /** https://stackoverflow.com/a/34057860 */
+      step={type === "number" ? 0.01 : undefined}
     />
   );
 };
