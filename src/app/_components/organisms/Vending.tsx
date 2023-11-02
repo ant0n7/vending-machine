@@ -1,12 +1,10 @@
 "use client";
 import { useState } from "react";
 import VendingDisplay from "../atom/VendingDisplay";
-import { VendingOptions } from "../data";
+import { PriceRange, VendingOptions } from "../data";
 import toast from "react-hot-toast";
 import { type SyntheticEvent } from "react";
 import { cn } from "~/utils";
-
-const PriceRange = [0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0];
 
 const Vending = () => {
   const [price, setPrice] = useState<number>();
