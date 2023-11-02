@@ -1,15 +1,18 @@
 "use client";
 import { useState } from "react";
-import VendingDisplay from "../atom/VendingDisplay";
 import { PriceRange, VendingOptions } from "../data";
 import toast from "react-hot-toast";
 import { type SyntheticEvent } from "react";
 import { cn } from "~/utils";
+import { useVendingOptions } from "~/utils/atoms/vending.atom";
+import VendingDisplay from "../atom/VendingDisplay";
 
 const Vending = () => {
   const [price, setPrice] = useState<number>();
   const [amountEntered, setAmountEntered] = useState<number>();
   const [selected, setSelected] = useState<number>();
+
+  const { vendingOption } = useVendingOptions();
 
   const leftToPay = (price ?? 0) - (amountEntered ?? 0) || undefined;
 
@@ -40,7 +43,7 @@ const Vending = () => {
 
   return (
     <div className="grid w-full max-w-md grid-cols-3 gap-2 bg-[#202022] p-3 text-sm">
-      {VendingOptions.map(({ id, name }) => (
+      {vendingOption.map(({ id, name }) => (
         <button
           type="button"
           className={cn(
