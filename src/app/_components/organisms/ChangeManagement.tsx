@@ -96,7 +96,9 @@ const ChangeManagement = () => {
                     isEditMode ? "max-w-[65%] pt-1" : "max-w-[83%]",
                   )}
                 >
-                  {isEditMode ? "---" : change.amount * change.inStore}
+                  {isEditMode
+                    ? "---"
+                    : (change.amount * change.inStore).toFixed(2)}
                 </div>
 
                 {!isEditMode ? (

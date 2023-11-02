@@ -15,7 +15,6 @@ const Vending = () => {
   const [price, setPrice] = useState<number>();
   const [amountEntered, setAmountEntered] = useState<number>();
   const [selectedStr, setSelectedStr] = useState("");
-  // const [selected, setSelected] = useState<number>("");
 
   const selected = Number(selectedStr);
 
@@ -63,44 +62,59 @@ const Vending = () => {
     return leftToPay;
   })();
 
+  console.log(change);
+
   const handlePay = () => {
     if (selected) {
-      const newElement = vendingOption.map((ele) => {
-        if (ele.id === selected) {
-          return { ...ele, inventory: ele.inventory - 1 };
+      if (typeof price !== "undefined") {
+        if ((amountEntered ?? 0) >= (price ?? 0)) {
+          const newElement = vendingOption.map((ele) => {
+            if (ele.id === selected) {
+              return { ...ele, inventory: ele.inventory - 1 };
+            }
+
+            return ele;
+          });
+
+          if (!change || (change && !CHANGE_ONLY_MODE)) {
+            setVendingOption(newElement);
+            setPrice(undefined);
+            setSelectedStr("");
+            setAmountEntered(undefined);
+            toast.success("Payment made successfully");
+          }
+        } else {
+          toast.error("Amount entered is smaller than price");
         }
-
-        return ele;
-      });
-
-      setVendingOption(newElement);
+      } else {
+        toast.error("Click enter to select element");
+      }
     }
 
     if (change) {
-      const newChangeArr = getChange(change, vendingChange);
+      if (!CHANGE_ONLY_MODE) {
+        const newChangeArr = getChange(change, vendingChange);
 
-      console.log(newChangeArr);
+        setVendingChange(newChangeArr);
+        toast.success(`You have been given ${change.toFixed(2)} as change`);
+      } else {
+        toast.error("Please enter the exact amount");
+      }
     }
   };
+
+  const CHANGE_ONLY_MODE = vendingChange.some((ele) => ele.inStore <= 0);
 
   return (
     <div className="grid w-full max-w-md grid-cols-3 gap-2 bg-[#202022] p-3 text-sm">
       {vendingOption.map(({ id, name, inventory }) => (
-        <button
-          type="button"
+        <div
           className={cn(
-            "relative flex cursor-pointer flex-col items-center rounded bg-[#151515]/50 p-3 text-center text-base",
-            selected === id && "bg-blue-950/10 ring",
+            "relative flex cursor-auto flex-col items-center rounded bg-[#151515]/50 p-3 text-center text-base",
+            price && selected === id && "bg-blue-950/10 ring",
             !inventory && "cursor-not-allowed",
           )}
           key={id}
-          onClick={() => {
-            if (inventory > 0) {
-              setSelectedStr(String(id));
-            } else {
-              toast.error(`${name} is currently out of stock`);
-            }
-          }}
         >
           <span>{id}</span>
           <p>{name}</p>
@@ -109,7 +123,7 @@ const Vending = () => {
               Out of stock
             </div>
           )}
-        </button>
+        </div>
       ))}
 
       <div className="col-span-3 my-3 grid grid-cols-3 gap-2 [&>*]:pl-2">
@@ -122,9 +136,18 @@ const Vending = () => {
           <span className="font-bold">You selected:</span>
           {price && <span>{selectedVending?.name}</span>}
         </div>
+
         <div className="col-span-3 flex items-center justify-between bg-slate-500/10 px-4 py-2">
-          <span className="font-bold">You Change:</span>
-          {leftToPay && <span>{change.toFixed(2)}</span>}
+          {CHANGE_ONLY_MODE ? (
+            <div className="w-full text-center text-red-600">
+              Accepting only exact change
+            </div>
+          ) : (
+            <>
+              <span className="font-bold">You Change:</span>
+              {leftToPay && <span>{change.toFixed(2)}</span>}
+            </>
+          )}
         </div>
       </div>
       <div className="col-span-3 grid grid-cols-2 gap-4">
