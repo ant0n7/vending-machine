@@ -64,7 +64,7 @@ const ChangeManagement = () => {
   return (
     <div>
       <div className="w-full">
-        <header className="grid grid-cols-3 gap-4 bg-gray-50/20 px-4 py-2">
+        <header className="grid grid-cols-3 gap-4 bg-gray-50/20 px-4 py-1">
           <div>Change</div>
           <div>In Stock</div>
           <div>Total</div>
@@ -82,7 +82,7 @@ const ChangeManagement = () => {
                 {Fields.map((field) => (
                   <InventoryEditableRow
                     key={field}
-                    className={cn("p-1.5")}
+                    className={cn("py-1")}
                     shouldEdit={isEditMode}
                     value={change[field]}
                     name={field}

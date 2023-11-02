@@ -58,7 +58,7 @@ const InventoryView = () => {
   return (
     <aside className="mx-auto w-full max-w-md text-sm">
       <div className="w-full">
-        <header className="grid grid-cols-3 gap-4 bg-gray-50/20 px-4 py-2">
+        <header className="grid grid-cols-3 gap-4 bg-gray-50/20 px-4 py-1">
           <div>Item</div>
           <div>Price</div>
           <div>QTY</div>
@@ -77,7 +77,7 @@ const InventoryView = () => {
                   <InventoryEditableRow
                     key={field}
                     className={cn(
-                      "p-1.5",
+                      "p-1",
                       idx === Fields.length - 1 && isEditMode
                         ? "max-w-[65%]"
                         : "max-w-[80%]",
