@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { PriceRange, VendingOptions } from "../data";
+import { PriceRange } from "../data";
 import toast from "react-hot-toast";
 import { type SyntheticEvent } from "react";
 import { cn } from "~/utils";
@@ -19,7 +19,7 @@ const Vending = () => {
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     if (selected) {
-      const selectedOption = VendingOptions.find(({ id }) => selected === id);
+      const selectedOption = vendingOption.find(({ id }) => selected === id);
 
       if (selectedOption) {
         setPrice(selectedOption.price);
@@ -39,7 +39,7 @@ const Vending = () => {
       toast.error("You are yet to make a choice");
     }
   };
-  const selectedVending = VendingOptions.find(({ id }) => selected === id);
+  const selectedVending = vendingOption.find(({ id }) => selected === id);
 
   return (
     <div className="grid w-full max-w-md grid-cols-3 gap-2 bg-[#202022] p-3 text-sm">

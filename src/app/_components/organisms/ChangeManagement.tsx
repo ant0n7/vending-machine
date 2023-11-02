@@ -1,93 +1,103 @@
 "use client";
 
-import { useState } from "react";
-import { useVendingOptions } from "~/utils/atoms/vending.atom";
-import { IconButton, type IconButtonProps } from "../atom/Icons";
 import { cn, getAllFormElementValue } from "~/utils";
+import { useVendingChange } from "~/utils/atoms/vending.atom";
 import InventoryEditableRow from "../atom/InventoryEditableRow";
-import { VendingOptionSchema } from "~/utils/zod/schema";
+import { useState } from "react";
+import { IconButton } from "../atom/Icons";
+import { EditButton } from "./InventoryView";
+import { VendingChangeSchema } from "~/utils/zod/schema";
 import toast from "react-hot-toast";
+import { handleOneLevelZodError } from "~/utils/zod/helpers";
 
-const Fields = ["name", "price", "inventory"] as const;
+const Fields = ["amount", "inStore"] as const;
 
-export const EditButton = ({ className, ...rest }: IconButtonProps) => (
-  <IconButton
-    className={cn(
-      "absolute right-0 top-1/2 h-3 w-3 -translate-y-1/2",
-      className,
-    )}
-    {...rest}
-  />
-);
-
-const InventoryView = () => {
+const ChangeManagement = () => {
   const [editMode, setEditMode] = useState<number>();
-  const { setVendingOption, vendingOption } = useVendingOptions();
+  const { setVendingChange, vendingChange } = useVendingChange();
 
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const data = getAllFormElementValue(e.currentTarget);
 
-    const res = VendingOptionSchema.safeParse(data);
+    const res = VendingChangeSchema.safeParse(data);
 
     if (res.success) {
-      const { inventory, name, price } = res.data;
-      const newVendingOptions = vendingOption.map((option) => {
+      const { amount, inStore } = res.data;
+      const newVendingOptions = vendingChange.map((option) => {
         if (option.id === editMode) {
           return {
             id: option.id,
-            inventory: Number(inventory),
-            price: Number(price),
-            name: name,
+            amount: Number(amount),
+            inStore: Number(inStore),
           };
         }
 
         return option;
       });
 
-      setVendingOption(newVendingOptions);
+      setVendingChange(newVendingOptions);
       setEditMode(undefined);
     }
 
     if (!res.success) {
-      toast.error("Please check input values");
+      console.log(res.error);
+
+      const err = handleOneLevelZodError(res.error);
+
+      if (err) {
+        if (typeof err === "string") {
+          toast.error(err);
+        } else {
+          const [k1] = Object.keys(err);
+
+          const errK1 = err?.[k1!];
+
+          toast.error(errK1 ?? "Please check input values");
+        }
+      } else {
+        toast.error("Incorrect values passed");
+      }
     }
   };
 
   return (
-    <aside className="mx-auto w-full max-w-md text-sm">
+    <div>
       <div className="w-full">
         <header className="grid grid-cols-3 gap-4 bg-gray-50/20 px-4 py-2">
-          <div>Item</div>
-          <div>Price</div>
-          <div>QTY</div>
+          <div>Change</div>
+          <div>In Stock</div>
+          <div>Total</div>
         </header>
         <div className="">
-          {vendingOption.map(({ id, ...vendOption }) => {
+          {vendingChange.map(({ id, ...change }) => {
             const isEditMode = editMode === id;
 
             return (
               <form
-                key={id}
+                key={change.amount}
                 className="relative grid w-full grid-cols-3 gap-4 py-1"
                 onSubmit={handleSave}
               >
-                {Fields.map((field, idx) => (
+                {Fields.map((field) => (
                   <InventoryEditableRow
                     key={field}
-                    className={cn(
-                      "p-1.5",
-                      idx === Fields.length - 1 && isEditMode
-                        ? "max-w-[65%]"
-                        : "max-w-[80%]",
-                    )}
+                    className={cn("p-1.5")}
                     shouldEdit={isEditMode}
-                    value={vendOption[field]}
+                    value={change[field]}
                     name={field}
-                    type={field !== "name" ? "number" : "text"}
+                    type="number"
                   />
                 ))}
+
+                <div
+                  className={cn(
+                    "select-none",
+                    isEditMode ? "max-w-[65%] pt-1" : "max-w-[83%]",
+                  )}
+                >
+                  {isEditMode ? "---" : change.amount * change.inStore}
+                </div>
 
                 {!isEditMode ? (
                   <EditButton
@@ -109,8 +119,8 @@ const InventoryView = () => {
           })}
         </div>
       </div>
-    </aside>
+    </div>
   );
 };
 
-export default InventoryView;
+export default ChangeManagement;

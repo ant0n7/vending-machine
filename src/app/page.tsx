@@ -1,4 +1,5 @@
 import { H1Header } from "./_components/atom/H1.Heading";
+import ChangeManagement from "./_components/organisms/ChangeManagement";
 import InventoryView from "./_components/organisms/InventoryView";
 import Vending from "./_components/organisms/Vending";
 
@@ -13,8 +14,14 @@ export default function Home() {
       </div>
       <div className="grid place-items-center">
         <div className="w-full">
-          <H1Header>Inventory Interface</H1Header>
-          <InventoryView />
+          <H1Header>Manage Inventory</H1Header>
+          <div className="mx-auto w-full max-w-md space-y-4 text-sm">
+            <InventoryView />
+            <div>
+              <H1Header>Manage Change</H1Header>
+              <ChangeManagement />
+            </div>
+          </div>
         </div>
       </div>
     </main>
