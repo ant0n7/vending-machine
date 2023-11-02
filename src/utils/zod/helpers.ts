@@ -111,8 +111,8 @@ export const createInputNumberSchema = (key: string) =>
       },
       { message: `${key} should be a number` },
     )
-    .refine((v) => Number(v) > 0, {
-      message: `${key} should be greater than 0`,
+    .refine((v) => Number(v) > -1, {
+      message: `${key} should be greater than or equal to 0`,
     });
 
 /** @argument ErrorType : if you need to assert your error type, just pass it as a generics via asserting with the as keyword */

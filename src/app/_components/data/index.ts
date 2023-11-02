@@ -1,3 +1,9 @@
+interface IChange {
+  id: number;
+  amount: number;
+  inStore: number;
+}
+
 interface IVendingOptions {
   id: number;
   name: string;
@@ -18,12 +24,6 @@ export const VendingOptions: IVendingOptions[] = [
 ];
 
 export const PriceRange = [0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0];
-
-interface IChange {
-  id: number;
-  amount: number;
-  inStore: number;
-}
 
 export const VendingChange: IChange[] = [
   { id: 1, amount: 0.05, inStore: 10 },
