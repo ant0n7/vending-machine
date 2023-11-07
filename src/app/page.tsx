@@ -8,7 +8,7 @@ export default function Home() {
     <main className="grid min-h-screen w-full grid-cols-2 [&>*]:py-10">
       <div className="grid place-items-center bg-black/70">
         <div className="w-full max-w-md">
-          <H1Header>Application Interface</H1Header>
+          <H1Header>Vending Machine</H1Header>
           <Vending />
         </div>
       </div>
